@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Teacher Theresa — 2027 Classroom Attendance, Periodic Timetable & Student Roster System">
+    <title>Teacher Theresa — 2027 Classroom Attendance & Timetable</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#090d16',
+                        },
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        h1, h2, h3, .font-display {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+        }
+        .calendar-cell {
+            transition: all 0.16s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .calendar-cell:hover:not(.empty-cell) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- EXECUTIVE ACADEMIC HEADER -->
+    <header class="bg-gradient-to-r from-navy-950 via-brand-900 to-navy-900 text-white shadow-lg sticky top-0 z-30 border-b border-white/10">
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+            
+            <!-- Teacher Branding -->
+            <div class="flex items-center space-x-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-500 to-indigo-400 flex items-center justify-center shadow-inner border border-white/20 shrink-0">
+                    <i class="fa-solid fa-chalkboard-user text-white text-xl"></i>
+                </div>
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white">TEACHER THERESA</h1>
+                        <span class="px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                            Academic Year 2027
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-300 mt-0.5">Periodic Timetable, Class Roster & Daily Attendance Portal</p>
+                </div>
+            </div>
+
+            <!-- Action Toolbar -->
+            <div class="flex flex-wrap items-center gap-2 no-print">
+                <button type="button" onclick="openTimetableModal()" class="inline-flex items-center px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-brand-600 hover:bg-brand-500 text-white shadow-sm border border-brand-400/30 transition">
+                    <i class="fa-solid fa-calendar-week mr-2"></i>
+                    <span>Timetable Periods</span>
+                </button>
+                <button type="button" onclick="openClassManagerModal()" class="inline-flex items-center px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 transition">
+                    <i class="fa-solid fa-users mr-2 text-indigo-300"></i>
+                    <span>Classes & Rosters</span>
+                </button>
+                <button type="button" onclick="exportAllCSV()" class="inline-flex items-center px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-emerald-600/90 hover:bg-emerald-500 text-white border border-emerald-400/30 transition">
+                    <i class="fa-solid fa-file-csv mr-2"></i>
+                    <span>Export CSV</span>
+                </button>
+                <button type="button" onclick="downloadHTMLForGitHub()" title="Download standalone index.html file ready to upload to GitHub" class="inline-flex items-center px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/30 transition">
+                    <i class="fa-brands fa-github mr-2 text-white"></i>
+                    <span>Download index.html</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick 2027 Month Selector Strip -->
+        <div class="bg-navy-950/60 border-t border-white/10 no-print">
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-2 overflow-x-auto">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 shrink-0 mr-1">2027 Months:</span>
+                <div id="monthPillsContainer" class="flex items-center space-x-1">
+                    <!-- Populated dynamically Jan - Dec 2027 -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="flex-grow max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+
+            <!-- LEFT / MAIN COLUMN (8 cols): 2027 MONTHLY CALENDAR WITH EMBEDDED TIMETABLE -->
+            <section class="xl:col-span-8 bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden">
+                
+                <!-- Calendar Top Bar -->
+                <div class="p-4 sm:px-6 sm:py-5 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h2 id="calendarTitle" class="text-xl sm:text-2xl font-extrabold text-slate-900">January 2027</h2>
+                            <span id="calendarPeriodSummaryBadge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200">
+                                Multi-Period Timetable Synced
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-0.5">Automatically renders the active timetable version for every date in 2027. Click any date to adjust times or update attendance.</p>
+                    </div>
+
+                    <div class="flex items-center space-x-1.5 no-print">
+                        <button type="button" onclick="openTimetableModal()" class="px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition">
+                            <i class="fa-solid fa-sliders mr-1"></i>Edit Periods
+                        </button>
+                        <button type="button" onclick="jumpToStartOf2027()" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg transition">
+                            Jan 2027
+                        </button>
+                        <button type="button" onclick="navigateMonth(-1)" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg border border-slate-200 transition" title="Previous Month">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </button>
+                        <button type="button" onclick="navigateMonth(1)" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg border border-slate-200 transition" title="Next Month">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Weekday Column Headers -->
+                <div class="grid grid-cols-7 bg-slate-100/80 border-b border-slate-200 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500 py-2.5">
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div class="text-slate-400">Sat</div>
+                    <div class="text-slate-400">Sun</div>
+                </div>
+
+                <!-- 2027 Calendar Grid -->
+                <div id="calendarGrid" class="grid grid-cols-7 gap-px bg-slate-200">
+                    <!-- Dynamically rendered day cells with timetable pills & attendance badges -->
+                </div>
+
+                <!-- Calendar Footer Legend -->
+                <div class="px-4 sm:px-6 py-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+                    <div class="flex flex-wrap items-center gap-4">
+                        <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1.5"></span> Attendance Updated</span>
+                        <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 mr-1.5"></span> Scheduled / Pending</span>
+                        <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-sm border-2 border-brand-600 mr-1.5"></span> Selected Date</span>
+                    </div>
+                    <div id="monthlySummaryStats" class="font-semibold text-slate-700">
+                        <!-- Monthly completed sessions count -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT COLUMN (4 cols): FRONT-PAGE DAILY SCHEDULE, EDITABLE TIME, ROSTER & UPDATE ATTENDANCE -->
+            <aside class="xl:col-span-4 space-y-5 xl:sticky xl:top-28">
+                
+                <!-- Selected Day Timetable & Quick Control Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden">
+                    <div class="p-4 sm:p-5 bg-gradient-to-r from-brand-700 to-indigo-800 text-white">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-200">Selected Day Schedule</span>
+                            <input type="date" id="frontDatePicker" min="2027-01-01" max="2027-12-31" onchange="onFrontDatePickerChange(this.value)"
+                                class="text-xs font-semibold bg-white/15 text-white border border-white/25 rounded-lg px-2.5 py-1 outline-none focus:bg-white/25 cursor-pointer">
+                        </div>
+                        <h3 id="selectedDayHeading" class="text-lg sm:text-xl font-extrabold mt-1">Monday, 4 January 2027</h3>
+                        <div class="mt-2 flex flex-wrap items-center gap-1.5">
+                            <span id="activePeriodDayBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-400/20 text-amber-200 border border-amber-300/30">
+                                <i class="fa-solid fa-layer-group mr-1.5"></i>Active: Term 1 Timetable
+                            </span>
+                        </div>
+                        <p id="selectedDaySubtext" class="text-xs text-indigo-100 mt-1.5">3 scheduled classes • Click any class to adjust time or update attendance</p>
+                    </div>
+
+                    <!-- Scheduled Timetable Cards for the Selected Day -->
+                    <div class="p-4 sm:p-5 space-y-3.5">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Today's Timetable Slots</h4>
+                            <button type="button" onclick="toggleExtraClassForm()" class="text-xs font-semibold text-brand-600 hover:text-brand-800 flex items-center">
+                                <i class="fa-solid fa-plus-circle mr-1"></i> Add Relief / Extra
+                            </button>
+                        </div>
+
+                        <!-- Collapsible Add Extra / Custom Class Slot Form -->
+                        <div id="extraClassFormBox" class="hidden p-3.5 rounded-xl bg-brand-50/70 border border-brand-200 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-brand-900">Add Class Slot to This Date</span>
+                                <button type="button" onclick="toggleExtraClassForm()" class="text-slate-400 hover:text-slate-600 text-xs"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Select Class</label>
+                                <select id="extraClassSelect" class="w-full text-xs font-medium rounded-lg border border-slate-300 bg-white px-2.5 py-2 outline-none focus:border-brand-500"></select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Start Time</label>
+                                    <input type="time" id="extraStartTime" value="14:00" class="w-full text-xs rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 outline-none focus:border-brand-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">End Time</label>
+                                    <input type="time" id="extraEndTime" value="15:00" class="w-full text-xs rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 outline-none focus:border-brand-500">
+                                </div>
+                            </div>
+                            <button type="button" onclick="addCustomSlotToSelectedDate()" class="w-full py-2 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-xs transition">
+                                Add Slot to Schedule
+                            </button>
+                        </div>
+
+                        <!-- Dynamic List of Day's Classes -->
+                        <div id="dayScheduleCardsContainer" class="space-y-3">
+                            <!-- Rendered dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Front-Page Student Name List Preview & Editor -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 sm:p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Student Name List</span>
+                            <div class="flex items-center space-x-2 mt-0.5">
+                                <select id="frontRosterClassSelect" onchange="renderFrontRosterList()" class="text-sm font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 outline-none focus:border-brand-500">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        <button type="button" id="frontEditRosterBtn" onclick="toggleFrontRosterEditor()" class="px-2.5 py-1.5 text-xs font-semibold text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-lg border border-brand-200 transition">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i>Edit Names
+                        </button>
+                    </div>
+
+                    <!-- Read-Only Student Roster List -->
+                    <div id="frontRosterPreviewBox" class="max-h-52 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50/70 divide-y divide-slate-200/70">
+                        <!-- Student names -->
+                    </div>
+
+                    <!-- Inline Roster Editor -->
+                    <div id="frontRosterEditBox" class="hidden space-y-2">
+                        <p class="text-[11px] text-slate-500">Enter or paste one student name per line:</p>
+                        <textarea id="frontRosterTextarea" rows="6" class="w-full rounded-xl border border-brand-300 p-2.5 text-xs text-slate-800 focus:ring-2 focus:ring-brand-200 outline-none"></textarea>
+                        <div class="flex justify-end space-x-2">
+                            <button type="button" onclick="cancelFrontRosterEditor()" class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg">Cancel</button>
+                            <button type="button" onclick="saveFrontRosterEditor()" class="px-3.5 py-1.5 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-lg">Save List</button>
+                        </div>
+                    </div>
+
+                    <!-- Direct Linked Update Attendance Button for Selected Roster Class -->
+                    <button type="button" onclick="launchAttendanceForFrontRosterClass()" class="mt-3.5 w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-clipboard-check text-emerald-400"></i>
+                        <span>Update Attendance for This Class</span>
+                    </button>
+                </div>
+
+                <!-- Data Backup & Portability Card (JSON Export / Import) -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 flex items-center justify-between gap-2 no-print">
+                    <div>
+                        <span class="text-xs font-bold text-slate-800 block">Backup & Sync Data</span>
+                        <span class="text-[11px] text-slate-500">Save or restore your 2027 records</span>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <button type="button" onclick="exportBackupJSON()" class="px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition">
+                            <i class="fa-solid fa-download mr-1"></i>Backup
+                        </button>
+                        <label class="px-2.5 py-1.5 text-xs font-semibold text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-lg border border-brand-200 transition cursor-pointer">
+                            <i class="fa-solid fa-upload mr-1"></i>Restore
+                            <input type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden">
+                        </label>
+                    </div>
+                </div>
+
+            </aside>
+        </div>
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 1: INTERACTIVE ATTENDANCE SHEET MODAL                           -->
+    <!-- ===================================================================== -->
+    <div id="attendanceModal" class="fixed inset-0 z-50 hidden bg-slate-900/65 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl border border-slate-200 overflow-hidden my-auto flex flex-col max-h-[92vh]">
+            
+            <!-- Modal Header -->
+            <div class="p-4 sm:px-6 sm:py-4 bg-gradient-to-r from-navy-900 via-brand-900 to-navy-900 text-white flex items-start justify-between gap-3 shrink-0">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                            Teacher Theresa • 2027
+                        </span>
+                        <span id="attModalDateBadge" class="text-xs font-semibold text-indigo-200">Monday, 4 January 2027</span>
+                    </div>
+                    <h3 id="attModalClassTitle" class="text-lg sm:text-xl font-extrabold mt-1">4 Amanah — Chemistry</h3>
+                </div>
+                <button type="button" onclick="closeAttendanceModal()" class="text-slate-300 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Editable Session Time & Live Attendance Summary Bar -->
+            <div class="px-4 sm:px-6 py-3 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                <div class="flex flex-wrap items-center gap-2 text-xs">
+                    <span class="font-bold text-slate-600"><i class="fa-regular fa-clock text-brand-600 mr-1"></i>Class Time:</span>
+                    <input type="time" id="attModalStartTime" class="font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg px-2 py-1 outline-none focus:border-brand-500">
+                    <span class="text-slate-400">to</span>
+                    <input type="time" id="attModalEndTime" class="font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg px-2 py-1 outline-none focus:border-brand-500">
+                </div>
+
+                <!-- Live Status Counters -->
+                <div id="attModalLiveStats" class="flex flex-wrap items-center gap-1.5 text-[11px] font-bold">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Quick Bulk Actions & Search Bar -->
+            <div class="px-4 sm:px-6 py-2.5 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                <div class="relative w-full sm:w-64">
+                    <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs absolute left-3 top-1/2 -translate-y-1/2"></i>
+                    <input type="text" id="attStudentSearchInput" oninput="renderAttendanceSheetRows()" placeholder="Filter student name..."
+                        class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-brand-500 outline-none">
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button type="button" onclick="markAllStudentsStatus('Present')" class="px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition">
+                        <i class="fa-solid fa-check-double mr-1"></i>Mark All Present
+                    </button>
+                    <button type="button" onclick="markAllStudentsStatus('Absent')" class="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition">
+                        Mark All Absent
+                    </button>
+                </div>
+            </div>
+
+            <!-- Student Attendance Table / Rows -->
+            <div class="p-4 sm:px-6 overflow-y-auto flex-grow bg-slate-50/50">
+                <div id="attModalRowsContainer" class="space-y-2">
+                    <!-- Dynamically populated student rows -->
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-4 sm:px-6 py-3.5 bg-white border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                <span class="text-xs text-slate-500">Changes update the 2027 calendar immediately upon saving.</span>
+                <div class="flex items-center space-x-2">
+                    <button type="button" onclick="closeAttendanceModal()" class="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="saveAttendanceFromModal()" class="px-5 py-2 text-xs sm:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm transition flex items-center space-x-2">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save & Update Calendar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 2: PERIODIC TIMETABLE VERSIONS EDITOR (MULTI-PERIOD 2027)       -->
+    <!-- ===================================================================== -->
+    <div id="timetableModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-6xl w-full shadow-2xl border border-slate-200 overflow-hidden my-auto flex flex-col max-h-[94vh]">
+            
+            <!-- Modal Header -->
+            <div class="p-4 sm:px-6 sm:py-4 bg-navy-900 text-white flex items-center justify-between shrink-0">
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">2027 Periodic Engine</span>
+                        <h3 class="text-base sm:text-xl font-extrabold">Teacher Theresa — Timetable Versions & Date Ranges</h3>
+                    </div>
+                    <p class="text-xs text-slate-300 mt-0.5">Create different timetables for January, mid-year, exam weeks, or any custom start & end date in 2027. Newer/more specific date ranges automatically take priority.</p>
+                </div>
+                <button type="button" onclick="closeTimetableModal()" class="text-slate-300 hover:text-white p-1.5 rounded-lg hover:bg-white/10">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Period Tabs & New/Duplicate Controls -->
+            <div class="px-4 sm:px-6 py-3 bg-slate-100 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                <div id="timetablePeriodTabs" class="flex flex-wrap items-center gap-1.5">
+                    <!-- Dynamic Period Version Tabs -->
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button type="button" onclick="createNewTimetablePeriod(false)" class="px-3 py-1.5 text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg shadow-2xs transition">
+                        <i class="fa-solid fa-plus mr-1 text-brand-600"></i>New Blank Period
+                    </button>
+                    <button type="button" onclick="createNewTimetablePeriod(true)" class="px-3 py-1.5 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-2xs transition">
+                        <i class="fa-solid fa-copy mr-1"></i>Duplicate Current Period
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Period Settings Bar (Name, Start Date, End Date, Delete) -->
+            <div class="px-4 sm:px-6 py-3.5 bg-white border-b border-slate-200 shrink-0">
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                    <div class="sm:col-span-5">
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Timetable Period Name</label>
+                        <input type="text" id="periodNameInput" oninput="updateCurrentPeriodMeta()" placeholder="e.g., Timetable v2 — March Revision"
+                            class="w-full text-xs sm:text-sm font-bold text-slate-900 rounded-lg border border-slate-300 bg-slate-50 focus:bg-white px-3 py-1.5 outline-none focus:border-brand-500">
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Effective Start Date</label>
+                        <input type="date" id="periodStartDateInput" min="2027-01-01" max="2027-12-31" onchange="updateCurrentPeriodMeta()"
+                            class="w-full text-xs sm:text-sm font-semibold text-slate-800 rounded-lg border border-slate-300 bg-slate-50 focus:bg-white px-2.5 py-1.5 outline-none focus:border-brand-500">
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Effective End Date</label>
+                        <input type="date" id="periodEndDateInput" min="2027-01-01" max="2027-12-31" onchange="updateCurrentPeriodMeta()"
+                            class="w-full text-xs sm:text-sm font-semibold text-slate-800 rounded-lg border border-slate-300 bg-slate-50 focus:bg-white px-2.5 py-1.5 outline-none focus:border-brand-500">
+                    </div>
+                    <div class="sm:col-span-1 flex justify-end">
+                        <button type="button" id="deletePeriodBtn" onclick="deleteCurrentTimetablePeriod()" title="Delete this timetable period"
+                            class="w-full py-2 px-2.5 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New Period Slot to Selected Timetable Version -->
+            <div class="p-3.5 sm:px-6 bg-brand-50/70 border-b border-brand-100 shrink-0">
+                <form onsubmit="event.preventDefault(); addRecurringTimetableSlot();" class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-end">
+                    <div class="sm:col-span-2">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Day</label>
+                        <select id="ttDaySelect" class="w-full text-xs font-semibold rounded-lg border border-slate-300 bg-white px-2.5 py-2 outline-none focus:border-brand-500">
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5">Friday</option>
+                            <option value="6">Saturday</option>
+                            <option value="0">Sunday</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Class & Subject</label>
+                        <select id="ttClassSelect" class="w-full text-xs font-semibold rounded-lg border border-slate-300 bg-white px-2.5 py-2 outline-none focus:border-brand-500"></select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Room / Note</label>
+                        <input type="text" id="ttRoomInput" placeholder="e.g., Chem Lab 1" class="w-full text-xs rounded-lg border border-slate-300 bg-white px-2.5 py-2 outline-none focus:border-brand-500">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Start Time</label>
+                        <input type="time" id="ttStartTime" value="08:00" required class="w-full text-xs font-semibold rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 outline-none focus:border-brand-500">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">End Time</label>
+                        <input type="time" id="ttEndTime" value="09:00" required class="w-full text-xs font-semibold rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 outline-none focus:border-brand-500">
+                    </div>
+                    <div class="sm:col-span-1">
+                        <button type="submit" class="w-full py-2 px-3 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-xs transition" title="Add Period">
+                            <i class="fa-solid fa-plus"></i> Add
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Weekly Timetable Matrix (Mon–Fri + optional Weekend slots) -->
+            <div id="weeklyTimetableGrid" class="p-4 sm:p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-5 gap-3.5 bg-slate-50 flex-grow">
+                <!-- Populated Mon-Fri (+ Sat/Sun if slots exist) -->
+            </div>
+
+            <div class="px-6 py-3.5 bg-white border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                <span class="text-xs text-slate-500"><i class="fa-solid fa-circle-info text-brand-500 mr-1"></i>Tip: If two periods overlap on a date, the period with the latest Start Date automatically takes effect.</span>
+                <button type="button" onclick="closeTimetableModal()" class="px-5 py-2 text-xs sm:text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-xs">
+                    Save & Sync 2027 Calendar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 3: CLASS & STUDENT ROSTER MANAGER                               -->
+    <!-- ===================================================================== -->
+    <div id="classManagerModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden my-auto flex flex-col max-h-[90vh]">
+            <div class="p-4 sm:px-6 sm:py-5 bg-navy-900 text-white flex items-center justify-between shrink-0">
+                <div>
+                    <h3 class="text-lg sm:text-xl font-extrabold">Manage Classes & Student Name Lists</h3>
+                    <p class="text-xs text-slate-300 mt-0.5">Add new classes or edit student rosters for Teacher Theresa's 2027 classes.</p>
+                </div>
+                <button type="button" onclick="closeClassManagerModal()" class="text-slate-300 hover:text-white p-1.5 rounded-lg hover:bg-white/10">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="p-4 sm:p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
+                <!-- Create New Class -->
+                <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <h4 class="text-sm font-bold text-slate-900 flex items-center">
+                        <i class="fa-solid fa-folder-plus text-brand-600 mr-2"></i>Add New Class
+                    </h4>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Class Name & Subject</label>
+                        <input type="text" id="newClassTitleInput" placeholder="e.g., Form 3 Dedikasi — Science"
+                            class="w-full text-xs rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Student Names (One per line)</label>
+                        <textarea id="newClassRosterInput" rows="7" placeholder="Nur Aina Binti Zulkifli&#10;Lim Wei Jie&#10;Kavitha A/P Rajan&#10;Muhammad Hafiz Bin Roslan"
+                            class="w-full text-xs rounded-lg border border-slate-300 bg-white p-2.5 outline-none focus:border-brand-500"></textarea>
+                    </div>
+                    <button type="button" onclick="createNewClassFromModal()" class="w-full py-2.5 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-xs transition">
+                        Create Class
+                    </button>
+                </div>
+
+                <!-- Existing Classes List -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-bold text-slate-900 flex items-center">
+                        <i class="fa-solid fa-list-check text-emerald-600 mr-2"></i>Existing 2027 Classes
+                    </h4>
+                    <div id="existingClassesListContainer" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end shrink-0">
+                <button type="button" onclick="closeClassManagerModal()" class="px-5 py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST FEEDBACK -->
+    <div id="toastBanner" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-navy-900 text-white px-4 py-3 rounded-xl shadow-xl border border-white/10 flex items-center space-x-3 text-xs sm:text-sm font-semibold">
+            <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+            <span id="toastText">Saved!</span>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // 1. STORAGE KEYS & DEFAULT 2027 DATA FOR TEACHER THERESA
+        // =========================================================================
+        const KEY_CLASSES = 'theresa_2027_classes_v2';
+        const KEY_PERIODS = 'theresa_2027_periods_v2';
+        const KEY_DATE_OVERRIDES = 'theresa_2027_overrides_v2';
+        const KEY_ATTENDANCE = 'theresa_2027_attendance_v2';
+
+        const DEFAULT_CLASSES = [
+            {
+                id: 'cls-4a',
+                name: '4 Amanah — Chemistry',
+                color: 'indigo',
+                students: [
+                    'Ahmad Daniel Bin Razak',
+                    'Nurul Izzah Binti Kamarudin',
+                    'Lim Jia Hao',
+                    'Priya Darshini A/P Subramaniam',
+                    'Muhammad Syafiq Bin Ismail',
+                    'Wong Mei Ling',
+                    'Siti Aisyah Binti Mohd Nor',
+                    'Arjun A/L Chandran',
+                    'Chong Wei Jie',
+                    'Nur Farhana Binti Zulkifli'
+                ]
+            },
+            {
+                id: 'cls-5b',
+                name: '5 Bestari — Chemistry',
+                color: 'emerald',
+                students: [
+                    'Amirul Hakim Bin Osman',
+                    'Tan Xin Yi',
+                    'Deepa A/P Krishnan',
+                    'Nurin Qistina Binti Hamzah',
+                    'Lee Kah Wai',
+                    'Muhammad Hafiz Bin Roslan',
+                    'Goh Pei Shan',
+                    'Harish A/L Ganesan'
+                ]
+            },
+            {
+                id: 'cls-1c',
+                name: '1 Cerdik — Science',
+                color: 'amber',
+                students: [
+                    'Adam Rayyan Bin Azman',
+                    'Puteri Balqis Binti Yusof',
+                    'Ng Zi Xuan',
+                    'Kavinesh A/L Murugan',
+                    'Aleesya Sofea Binti Mazlan',
+                    'Yap Jun Kit',
+                    'Nur Damia Binti Ibrahim',
+                    'Sharmila A/P Selvam',
+                    'Zulfadhli Bin Hashim'
+                ]
+            },
+            {
+                id: 'cls-4d',
+                name: '4 Dinamik — Chemistry',
+                color: 'sky',
+                students: [
+                    'Aiman Hakim Bin Rosli',
+                    'Chew Mei Yan',
+                    'Dinesh A/L Rajendran',
+                    'Fatimah Azzahra Binti Yusuf',
+                    'Khoo Zi Yang',
+                    'Nurul Ain Binti Hassan',
+                    'Roshan A/L Pillai',
+                    'Tan Mei Qi'
+                ]
+            }
+        ];
+
+        // Multi-Period Timetable Versions for 2027 (Supports any custom date ranges)
+        const DEFAULT_TIMETABLE_PERIODS = [
+            {
+                id: 'period-jan',
+                name: 'Timetable v1 — January Start',
+                startDate: '2027-01-01',
+                endDate: '2027-02-28',
+                slots: [
+                    { id: 'p1-1', dayOfWeek: 1, classId: 'cls-4a', room: 'Chem Lab 1', startTime: '08:00', endTime: '09:00' },
+                    { id: 'p1-2', dayOfWeek: 1, classId: 'cls-5b', room: 'Chem Lab 2', startTime: '10:30', endTime: '11:30' },
+                    { id: 'p1-3', dayOfWeek: 1, classId: 'cls-1c', room: 'Sci Lab 3', startTime: '12:00', endTime: '13:00' },
+
+                    { id: 'p1-4', dayOfWeek: 2, classId: 'cls-5b', room: 'Chem Lab 2', startTime: '08:00', endTime: '09:00' },
+                    { id: 'p1-5', dayOfWeek: 2, classId: 'cls-4d', room: 'Room 4D', startTime: '09:30', endTime: '10:30' },
+
+                    { id: 'p1-6', dayOfWeek: 3, classId: 'cls-4a', room: 'Room 4A', startTime: '08:30', endTime: '09:30' },
+                    { id: 'p1-7', dayOfWeek: 3, classId: 'cls-1c', room: 'Sci Lab 3', startTime: '11:00', endTime: '12:00' },
+
+                    { id: 'p1-8', dayOfWeek: 4, classId: 'cls-4d', room: 'Chem Lab 1', startTime: '08:00', endTime: '09:00' },
+                    { id: 'p1-9', dayOfWeek: 4, classId: 'cls-5b', room: 'Room 5B', startTime: '10:30', endTime: '11:30' },
+                    { id: 'p1-10', dayOfWeek: 4, classId: 'cls-4a', room: 'Chem Lab 1', startTime: '12:00', endTime: '13:00' },
+
+                    { id: 'p1-11', dayOfWeek: 5, classId: 'cls-1c', room: 'Room 1C', startTime: '08:00', endTime: '09:00' },
+                    { id: 'p1-12', dayOfWeek: 5, classId: 'cls-4d', room: 'Chem Lab 2', startTime: '09:30', endTime: '10:30' }
+                ]
+            },
+            {
+                id: 'period-mar',
+                name: 'Timetable v2 — March Revision',
+                startDate: '2027-03-01',
+                endDate: '2027-12-31',
+                slots: [
+                    { id: 'p2-1', dayOfWeek: 1, classId: 'cls-5b', room: 'Chem Lab 1', startTime: '07:40', endTime: '08:40' },
+                    { id: 'p2-2', dayOfWeek: 1, classId: 'cls-4a', room: 'Chem Lab 1', startTime: '09:10', endTime: '10:10' },
+                    { id: 'p2-3', dayOfWeek: 1, classId: 'cls-4d', room: 'Room 4D', startTime: '11:30', endTime: '12:30' },
+
+                    { id: 'p2-4', dayOfWeek: 2, classId: 'cls-1c', room: 'Sci Lab 2', startTime: '08:10', endTime: '09:10' },
+                    { id: 'p2-5', dayOfWeek: 2, classId: 'cls-4a', room: 'Room 4A', startTime: '10:40', endTime: '11:40' },
+
+                    { id: 'p2-6', dayOfWeek: 3, classId: 'cls-5b', room: 'Room 5B', startTime: '08:00', endTime: '09:00' },
+                    { id: 'p2-7', dayOfWeek: 3, classId: 'cls-4d', room: 'Chem Lab 2', startTime: '10:30', endTime: '11:30' },
+
+                    { id: 'p2-8', dayOfWeek: 4, classId: 'cls-1c', room: 'Room 1C', startTime: '08:40', endTime: '09:40' },
+                    { id: 'p2-9', dayOfWeek: 4, classId: 'cls-4a', room: 'Chem Lab 1', startTime: '11:00', endTime: '12:00' },
+
+                    { id: 'p2-10', dayOfWeek: 5, classId: 'cls-5b', room: 'Chem Lab 2', startTime: '08:00', endTime: '09:00' },
+                    { id: 'p2-11', dayOfWeek: 5, classId: 'cls-1c', room: 'Sci Lab 3', startTime: '10:00', endTime: '11:00' }
+                ]
+            }
+        ];
+
+        // Pre-populated sample completed attendance on Monday, 4 Jan 2027
+        const DEFAULT_ATTENDANCE = {
+            '2027-01-04__p1-1': {
+                key: '2027-01-04__p1-1',
+                date: '2027-01-04',
+                slotId: 'p1-1',
+                classId: 'cls-4a',
+                className: '4 Amanah — Chemistry',
+                startTime: '08:00',
+                endTime: '09:00',
+                entries: [
+                    { name: 'Ahmad Daniel Bin Razak', status: 'Present', remark: '' },
+                    { name: 'Nurul Izzah Binti Kamarudin', status: 'Present', remark: '' },
+                    { name: 'Lim Jia Hao', status: 'Present', remark: '' },
+                    { name: 'Priya Darshini A/P Subramaniam', status: 'Present', remark: '' },
+                    { name: 'Muhammad Syafiq Bin Ismail', status: 'Present', remark: '' },
+                    { name: 'Wong Mei Ling', status: 'Late', remark: 'Traffic delay' },
+                    { name: 'Siti Aisyah Binti Mohd Nor', status: 'Present', remark: '' },
+                    { name: 'Arjun A/L Chandran', status: 'Present', remark: '' },
+                    { name: 'Chong Wei Jie', status: 'Present', remark: '' },
+                    { name: 'Nur Farhana Binti Zulkifli', status: 'Present', remark: '' }
+                ]
+            }
+        };
+
+        // Application State
+        let classes = [];
+        let timetablePeriods = [];
+        let dateOverrides = {};
+        let attendanceRecords = {};
+
+        let activeMonth2027 = 0; // 0 = January 2027
+        let selectedDate2027 = '2027-01-04';
+        let editingPeriodId = null;
+        let activeAttModalState = null;
+
+        const MONTHS_2027 = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const WEEKDAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        // =========================================================================
+        // 2. INITIALIZATION
+        // =========================================================================
+        window.onload = function () {
+            loadState();
+            renderMonthPills();
+            populateAllClassDropdowns();
+            renderCalendar2027();
+            renderSelectedDayPanel();
+            renderFrontRosterList();
+        };
+
+        function loadState() {
+            try {
+                classes = JSON.parse(localStorage.getItem(KEY_CLASSES)) || JSON.parse(JSON.stringify(DEFAULT_CLASSES));
+                timetablePeriods = JSON.parse(localStorage.getItem(KEY_PERIODS)) || JSON.parse(JSON.stringify(DEFAULT_TIMETABLE_PERIODS));
+                dateOverrides = JSON.parse(localStorage.getItem(KEY_DATE_OVERRIDES)) || {};
+                attendanceRecords = JSON.parse(localStorage.getItem(KEY_ATTENDANCE)) || JSON.parse(JSON.stringify(DEFAULT_ATTENDANCE));
+            } catch (e) {
+                classes = JSON.parse(JSON.stringify(DEFAULT_CLASSES));
+                timetablePeriods = JSON.parse(JSON.stringify(DEFAULT_TIMETABLE_PERIODS));
+                dateOverrides = {};
+                attendanceRecords = JSON.parse(JSON.stringify(DEFAULT_ATTENDANCE));
+            }
+            if (!timetablePeriods.length) {
+                timetablePeriods = JSON.parse(JSON.stringify(DEFAULT_TIMETABLE_PERIODS));
+            }
+            editingPeriodId = timetablePeriods[0].id;
+        }
+
+        function saveState() {
+            localStorage.setItem(KEY_CLASSES, JSON.stringify(classes));
+            localStorage.setItem(KEY_PERIODS, JSON.stringify(timetablePeriods));
+            localStorage.setItem(KEY_DATE_OVERRIDES, JSON.stringify(dateOverrides));
+            localStorage.setItem(KEY_ATTENDANCE, JSON.stringify(attendanceRecords));
+        }
+
+        // =========================================================================
+        // 3. PERIODIC DATE-RANGE TIMETABLE RESOLUTION ENGINE
+        // =========================================================================
+        function getActivePeriodForDate(dateStr) {
+            const matching = timetablePeriods.filter(p => {
+                const startOk = !p.startDate || dateStr >= p.startDate;
+                const endOk = !p.endDate || dateStr <= p.endDate;
+                return startOk && endOk;
+            });
+
+            if (matching.length === 0) return null;
+
+            matching.sort((a, b) => {
+                if (a.startDate !== b.startDate) {
+                    return b.startDate.localeCompare(a.startDate);
+                }
+                return a.endDate.localeCompare(b.endDate);
+            });
+
+            return matching[0];
+        }
+
+        function getSlotsForDate(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const dateObj = new Date(y, m - 1, d);
+            const dow = dateObj.getDay();
+
+            const activePeriod = getActivePeriodForDate(dateStr);
+            const override = dateOverrides[dateStr] || { modified: {}, extra: [], removed: [] };
+            const removedSet = new Set(override.removed || []);
+
+            const baseSlots = activePeriod
+                ? activePeriod.slots
+                    .filter(slot => slot.dayOfWeek === dow && !removedSet.has(slot.id))
+                    .map(slot => {
+                        const mod = override.modified && override.modified[slot.id];
+                        return {
+                            slotId: slot.id,
+                            periodId: activePeriod.id,
+                            periodName: activePeriod.name,
+                            classId: slot.classId,
+                            room: slot.room || '',
+                            startTime: mod ? mod.startTime : slot.startTime,
+                            endTime: mod ? mod.endTime : slot.endTime,
+                            isRecurring: true,
+                            isTimeModifiedForDate: Boolean(mod)
+                        };
+                    })
+                : [];
+
+            const extraSlots = (override.extra || []).map(ex => ({
+                slotId: ex.id,
+                periodId: null,
+                periodName: 'Relief / Extra Slot',
+                classId: ex.classId,
+                room: ex.room || '',
+                startTime: ex.startTime,
+                endTime: ex.endTime,
+                isRecurring: false,
+                isTimeModifiedForDate: false
+            }));
+
+            const combined = [...baseSlots, ...extraSlots];
+            combined.sort((a, b) => a.startTime.localeCompare(b.startTime));
+            return combined;
+        }
+
+        function getClassById(classId) {
+            return classes.find(c => c.id === classId) || { id: classId, name: 'Unknown Class', color: 'slate', students: [] };
+        }
+
+        // =========================================================================
+        // 4. 2027 CALENDAR RENDERING
+        // =========================================================================
+        function renderMonthPills() {
+            const container = document.getElementById('monthPillsContainer');
+            container.innerHTML = MONTHS_2027.map((mName, idx) => {
+                const isActive = idx === activeMonth2027;
+                return `
+                    <button type="button" onclick="selectMonth2027(${idx})"
+                        class="px-2.5 py-1 rounded-lg text-xs font-bold transition shrink-0 ${isActive
+                            ? 'bg-brand-500 text-white shadow-xs'
+                            : 'text-slate-300 hover:text-white hover:bg-white/10'}">
+                        ${SHORT_MONTHS[idx]}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectMonth2027(monthIndex) {
+            activeMonth2027 = monthIndex;
+            renderMonthPills();
+            renderCalendar2027();
+        }
+
+        function navigateMonth(delta) {
+            let next = activeMonth2027 + delta;
+            if (next < 0) next = 11;
+            if (next > 11) next = 0;
+            selectMonth2027(next);
+        }
+
+        function jumpToStartOf2027() {
+            activeMonth2027 = 0;
+            selectedDate2027 = '2027-01-04';
+            renderMonthPills();
+            renderCalendar2027();
+            renderSelectedDayPanel();
+        }
+
+        function renderCalendar2027() {
+            document.getElementById('calendarTitle').textContent = `${MONTHS_2027[activeMonth2027]} 2027`;
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            const firstDayJS = new Date(2027, activeMonth2027, 1).getDay();
+            const leadingEmptyCells = (firstDayJS === 0) ? 6 : firstDayJS - 1;
+            const daysInMonth = new Date(2027, activeMonth2027 + 1, 0).getDate();
+
+            let monthTotalSlots = 0;
+            let monthCompletedSlots = 0;
+            const periodsUsedInMonth = new Set();
+
+            for (let i = 0; i < leadingEmptyCells; i++) {
+                const blank = document.createElement('div');
+                blank.className = 'empty-cell bg-slate-50/70 min-h-[112px] sm:min-h-[132px]';
+                grid.appendChild(blank);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `2027-${String(activeMonth2027 + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dateObj = new Date(2027, activeMonth2027, day);
+                const dow = dateObj.getDay();
+                const isWeekend = (dow === 0 || dow === 6);
+                const isSelected = dateStr === selectedDate2027;
+
+                const activePeriod = getActivePeriodForDate(dateStr);
+                if (activePeriod) periodsUsedInMonth.add(activePeriod.name);
+
+                const daySlots = getSlotsForDate(dateStr);
+                monthTotalSlots += daySlots.length;
+
+                const cell = document.createElement('div');
+                cell.onclick = () => selectCalendarDate2027(dateStr);
+
+                let cellClasses = 'calendar-cell cursor-pointer p-1.5 sm:p-2 min-h-[112px] sm:min-h-[132px] flex flex-col justify-between relative ';
+                if (isSelected) {
+                    cellClasses += 'bg-brand-50/80 ring-2 ring-inset ring-brand-600 z-10';
+                } else if (isWeekend) {
+                    cellClasses += 'bg-slate-50/90 hover:bg-slate-100/80';
+                } else {
+                    cellClasses += 'bg-white hover:bg-slate-50';
+                }
+                cell.className = cellClasses;
+
+                const completedForDay = daySlots.filter(s => Boolean(attendanceRecords[`${dateStr}__${s.slotId}`])).length;
+                monthCompletedSlots += completedForDay;
+
+                const isPeriodStartDay = activePeriod && activePeriod.startDate === dateStr;
+
+                let topHTML = `
+                    <div class="flex items-center justify-between gap-1 mb-1">
+                        <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold shrink-0 ${isSelected
+                            ? 'bg-brand-600 text-white'
+                            : (isWeekend ? 'text-slate-400' : 'text-slate-700')}">
+                            ${day}
+                        </span>
+                        <div class="flex items-center gap-1 truncate">
+                            ${isPeriodStartDay ? `<span class="px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800 text-[9px] font-extrabold truncate" title="New Timetable Period Starts: ${escapeAttr(activePeriod.name)}">NEW TT</span>` : ''}
+                            ${(daySlots.length > 0 && completedForDay === daySlots.length)
+                                ? `<span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded-full border border-emerald-200 shrink-0" title="All classes updated"><i class="fa-solid fa-check"></i></span>`
+                                : ''}
+                        </div>
+                    </div>
+                `;
+
+                let slotsHTML = `<div class="space-y-1 overflow-hidden flex-grow">`;
+                daySlots.forEach(slot => {
+                    const cls = getClassById(slot.classId);
+                    const recKey = `${dateStr}__${slot.slotId}`;
+                    const record = attendanceRecords[recKey];
+                    const shortClassName = cls.name.split('—')[0].trim();
+
+                    if (record) {
+                        const presentCount = record.entries.filter(e => e.status === 'Present' || e.status === 'Late').length;
+                        slotsHTML += `
+                            <div class="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-[10px] leading-tight truncate flex items-center justify-between" title="${escapeAttr(cls.name)} (${formatTime12h(slot.startTime)}) — Updated">
+                                <span class="font-bold text-emerald-900 truncate">${escapeHTML(slot.startTime)} ${escapeHTML(shortClassName)}</span>
+                                <span class="text-emerald-700 font-extrabold ml-1 shrink-0">${presentCount}/${record.entries.length}</span>
+                            </div>
+                        `;
+                    } else {
+                        slotsHTML += `
+                            <div class="px-1.5 py-0.5 rounded bg-amber-50/90 border border-amber-200/80 text-[10px] leading-tight truncate flex items-center justify-between" title="${escapeAttr(cls.name)} (${formatTime12h(slot.startTime)}) — Pending">
+                                <span class="font-semibold text-slate-700 truncate">${escapeHTML(slot.startTime)} ${escapeHTML(shortClassName)}</span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0 ml-1"></span>
+                            </div>
+                        `;
+                    }
+                });
+                slotsHTML += `</div>`;
+
+                cell.innerHTML = topHTML + slotsHTML;
+                grid.appendChild(cell);
+            }
+
+            const totalCellsRendered = leadingEmptyCells + daysInMonth;
+            const remainder = totalCellsRendered % 7;
+            if (remainder !== 0) {
+                for (let i = 0; i < (7 - remainder); i++) {
+                    const blank = document.createElement('div');
+                    blank.className = 'empty-cell bg-slate-50/70 min-h-[112px] sm:min-h-[132px]';
+                    grid.appendChild(blank);
+                }
+            }
+
+            const summaryBadge = document.getElementById('calendarPeriodSummaryBadge');
+            const periodNamesArr = Array.from(periodsUsedInMonth);
+            summaryBadge.textContent = periodNamesArr.length > 0
+                ? `Active: ${periodNamesArr.join(' & ')}`
+                : 'No Timetable Period Assigned';
+
+            document.getElementById('monthlySummaryStats').textContent =
+                `${MONTHS_2027[activeMonth2027]} 2027: ${monthCompletedSlots} of ${monthTotalSlots} class periods updated`;
+        }
+
+        function selectCalendarDate2027(dateStr) {
+            selectedDate2027 = dateStr;
+            renderCalendar2027();
+            renderSelectedDayPanel();
+        }
+
+        function onFrontDatePickerChange(val) {
+            if (!val) return;
+            selectedDate2027 = val;
+            const monthIdx = parseInt(val.split('-')[1], 10) - 1;
+            if (monthIdx >= 0 && monthIdx <= 11 && monthIdx !== activeMonth2027) {
+                activeMonth2027 = monthIdx;
+                renderMonthPills();
+            }
+            renderCalendar2027();
+            renderSelectedDayPanel();
+        }
+
+        // =========================================================================
+        // 5. FRONT-PAGE SELECTED DAY TIMETABLE & EDITABLE TIME PANEL
+        // =========================================================================
+        function renderSelectedDayPanel() {
+            document.getElementById('frontDatePicker').value = selectedDate2027;
+            const [y, m, d] = selectedDate2027.split('-').map(Number);
+            const dateObj = new Date(y, m - 1, d);
+            const dayName = WEEKDAY_NAMES[dateObj.getDay()];
+
+            document.getElementById('selectedDayHeading').textContent = `${dayName}, ${d} ${MONTHS_2027[m - 1]} ${y}`;
+
+            const activePeriod = getActivePeriodForDate(selectedDate2027);
+            const periodBadge = document.getElementById('activePeriodDayBadge');
+            if (activePeriod) {
+                periodBadge.innerHTML = `<i class="fa-solid fa-layer-group mr-1.5"></i>Active: ${escapeHTML(activePeriod.name)} (${activePeriod.startDate} → ${activePeriod.endDate})`;
+            } else {
+                periodBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5"></i>No Timetable Period covers this date`;
+            }
+
+            const slots = getSlotsForDate(selectedDate2027);
+            document.getElementById('selectedDaySubtext').textContent =
+                slots.length === 0
+                    ? 'No recurring classes scheduled • Add a relief/extra slot or edit Timetable Periods'
+                    : `${slots.length} class period${slots.length > 1 ? 's' : ''} scheduled • Edit time or click Update Attendance`;
+
+            const container = document.getElementById('dayScheduleCardsContainer');
+            if (slots.length === 0) {
+                container.innerHTML = `
+                    <div class="p-6 text-center rounded-xl border border-dashed border-slate-300 bg-slate-50">
+                        <i class="fa-regular fa-calendar-xmark text-slate-400 text-2xl mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-600">No classes scheduled on ${dayName}.</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Click "+ Add Relief / Extra" above or configure Timetable Periods.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = slots.map(slot => {
+                const cls = getClassById(slot.classId);
+                const recKey = `${selectedDate2027}__${slot.slotId}`;
+                const record = attendanceRecords[recKey];
+
+                let statusBadge = `<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200">Pending</span>`;
+                let btnText = 'Update Attendance';
+                let btnStyle = 'bg-brand-600 hover:bg-brand-700 text-white';
+
+                if (record) {
+                    const present = record.entries.filter(e => e.status === 'Present' || e.status === 'Late').length;
+                    statusBadge = `<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-check mr-1"></i>Updated (${present}/${record.entries.length})</span>`;
+                    btnText = 'Edit Attendance';
+                    btnStyle = 'bg-emerald-600 hover:bg-emerald-700 text-white';
+                }
+
+                return `
+                    <div class="p-3.5 rounded-xl border ${record ? 'border-emerald-200 bg-emerald-50/20' : 'border-slate-200 bg-slate-50/60'} space-y-2.5 transition">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <div class="font-bold text-slate-900 text-sm">${escapeHTML(cls.name)}</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">
+                                    ${cls.students.length} Students ${slot.room ? `• <span class="font-semibold text-slate-600">${escapeHTML(slot.room)}</span>` : ''}
+                                </div>
+                            </div>
+                            ${statusBadge}
+                        </div>
+
+                        <!-- Inline Editable Time Row -->
+                        <div class="bg-white p-2 rounded-lg border border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center space-x-1.5 text-xs">
+                                <i class="fa-regular fa-clock text-brand-600"></i>
+                                <input type="time" id="start_${slot.slotId}" value="${slot.startTime}"
+                                    class="font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 outline-none focus:border-brand-500">
+                                <span class="text-slate-400">-</span>
+                                <input type="time" id="end_${slot.slotId}" value="${slot.endTime}"
+                                    class="font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 outline-none focus:border-brand-500">
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <button type="button" onclick="applySlotTimeChange('${slot.slotId}', false)" title="Save time for this specific date only"
+                                    class="px-2 py-1 text-[10px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded transition">
+                                    This Date
+                                </button>
+                                ${slot.isRecurring ? `
+                                <button type="button" onclick="applySlotTimeChange('${slot.slotId}', true)" title="Update this time across the active Timetable Period"
+                                    class="px-2 py-1 text-[10px] font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded transition">
+                                    Whole Period
+                                </button>` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Primary Linked Button to Update Attendance -->
+                        <button type="button" onclick="openAttendanceModalForSlot('${slot.slotId}')"
+                            class="w-full py-2 px-3 rounded-lg text-xs font-bold shadow-xs transition flex items-center justify-center space-x-1.5 ${btnStyle}">
+                            <i class="fa-solid fa-user-check"></i>
+                            <span>${btnText}</span>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function applySlotTimeChange(slotId, applyToActivePeriod) {
+            const newStart = document.getElementById(`start_${slotId}`).value;
+            const newEnd = document.getElementById(`end_${slotId}`).value;
+            if (!newStart || !newEnd) return;
+
+            if (applyToActivePeriod) {
+                const activePeriod = getActivePeriodForDate(selectedDate2027);
+                if (activePeriod) {
+                    const ttSlot = activePeriod.slots.find(s => s.id === slotId);
+                    if (ttSlot) {
+                        ttSlot.startTime = newStart;
+                        ttSlot.endTime = newEnd;
+                    }
+                }
+                if (dateOverrides[selectedDate2027] && dateOverrides[selectedDate2027].modified) {
+                    delete dateOverrides[selectedDate2027].modified[slotId];
+                }
+                showToast(`Time updated across "${activePeriod ? activePeriod.name : 'Period'}"!`);
+            } else {
+                if (!dateOverrides[selectedDate2027]) {
+                    dateOverrides[selectedDate2027] = { modified: {}, extra: [], removed: [] };
+                }
+                const extraItem = (dateOverrides[selectedDate2027].extra || []).find(e => e.id === slotId);
+                if (extraItem) {
+                    extraItem.startTime = newStart;
+                    extraItem.endTime = newEnd;
+                } else {
+                    dateOverrides[selectedDate2027].modified[slotId] = { startTime: newStart, endTime: newEnd };
+                }
+                showToast(`Time updated for ${selectedDate2027} only!`);
+            }
+
+            const recKey = `${selectedDate2027}__${slotId}`;
+            if (attendanceRecords[recKey]) {
+                attendanceRecords[recKey].startTime = newStart;
+                attendanceRecords[recKey].endTime = newEnd;
+            }
+
+            saveState();
+            renderCalendar2027();
+            renderSelectedDayPanel();
+        }
+
+        function toggleExtraClassForm() {
+            document.getElementById('extraClassFormBox').classList.toggle('hidden');
+        }
+
+        function addCustomSlotToSelectedDate() {
+            const classId = document.getElementById('extraClassSelect').value;
+            const startTime = document.getElementById('extraStartTime').value;
+            const endTime = document.getElementById('extraEndTime').value;
+            if (!classId || !startTime || !endTime) return;
+
+            if (!dateOverrides[selectedDate2027]) {
+                dateOverrides[selectedDate2027] = { modified: {}, extra: [], removed: [] };
+            }
+            dateOverrides[selectedDate2027].extra.push({
+                id: 'extra-' + Date.now(),
+                classId,
+                startTime,
+                endTime
+            });
+
+            saveState();
+            toggleExtraClassForm();
+            renderCalendar2027();
+            renderSelectedDayPanel();
+            showToast('Extra class slot added to selected date!');
+        }
+
+        // =========================================================================
+        // 6. FRONT-PAGE STUDENT ROSTER LIST & DROPDOWN SYNC
+        // =========================================================================
+        function populateAllClassDropdowns() {
+            const selects = [
+                document.getElementById('frontRosterClassSelect'),
+                document.getElementById('extraClassSelect'),
+                document.getElementById('ttClassSelect')
+            ];
+
+            selects.forEach(sel => {
+                if (!sel) return;
+                const previousVal = sel.value;
+                sel.innerHTML = classes.map(c => `<option value="${c.id}">${escapeHTML(c.name)}</option>`).join('');
+                if (previousVal && classes.some(c => c.id === previousVal)) {
+                    sel.value = previousVal;
+                }
+            });
+        }
+
+        function renderFrontRosterList() {
+            const selectEl = document.getElementById('frontRosterClassSelect');
+            if (!selectEl || classes.length === 0) return;
+
+            const classId = selectEl.value || classes[0].id;
+            const cls = getClassById(classId);
+            const previewBox = document.getElementById('frontRosterPreviewBox');
+
+            if (!cls.students || cls.students.length === 0) {
+                previewBox.innerHTML = `
+                    <div class="p-4 text-center text-xs text-slate-400">
+                        No students added yet. Click <strong>Edit Names</strong> to add your student list.
+                    </div>
+                `;
+                return;
+            }
+
+            previewBox.innerHTML = cls.students.map((studentName, idx) => `
+                <div class="px-3 py-2 flex items-center justify-between text-xs hover:bg-white transition">
+                    <div class="flex items-center space-x-2.5 truncate">
+                        <span class="w-5 h-5 rounded-full bg-brand-100 text-brand-700 font-bold text-[10px] flex items-center justify-center shrink-0">
+                            ${idx + 1}
+                        </span>
+                        <span class="font-medium text-slate-800 truncate">${escapeHTML(studentName)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleFrontRosterEditor() {
+            const classId = document.getElementById('frontRosterClassSelect').value;
+            const cls = getClassById(classId);
+            document.getElementById('frontRosterTextarea').value = (cls.students || []).join('\n');
+            document.getElementById('frontRosterPreviewBox').classList.add('hidden');
+            document.getElementById('frontRosterEditBox').classList.remove('hidden');
+            document.getElementById('frontEditRosterBtn').classList.add('hidden');
+        }
+
+        function cancelFrontRosterEditor() {
+            document.getElementById('frontRosterPreviewBox').classList.remove('hidden');
+            document.getElementById('frontRosterEditBox').classList.add('hidden');
+            document.getElementById('frontEditRosterBtn').classList.remove('hidden');
+        }
+
+        function saveFrontRosterEditor() {
+            const classId = document.getElementById('frontRosterClassSelect').value;
+            const cls = classes.find(c => c.id === classId);
+            if (!cls) return;
+
+            const updatedNames = document.getElementById('frontRosterTextarea').value
+                .split('\n')
+                .map(n => n.trim())
+                .filter(Boolean);
+
+            cls.students = updatedNames;
+            saveState();
+            cancelFrontRosterEditor();
+            renderFrontRosterList();
+            renderSelectedDayPanel();
+            showToast(`Updated student list for ${cls.name} (${updatedNames.length} students)!`);
+        }
+
+        // =========================================================================
+        // 7. ATTENDANCE SHEET MODAL (LAUNCH, TOGGLE STATUS & SAVE TO CALENDAR)
+        // =========================================================================
+        function openAttendanceModalForSlot(slotId) {
+            const slots = getSlotsForDate(selectedDate2027);
+            const slot = slots.find(s => s.slotId === slotId);
+            if (!slot) return;
+
+            const cls = getClassById(slot.classId);
+            const recKey = `${selectedDate2027}__${slot.slotId}`;
+            const existingRecord = attendanceRecords[recKey];
+
+            const existingMap = new Map();
+            if (existingRecord && existingRecord.entries) {
+                existingRecord.entries.forEach(item => existingMap.set(item.name, item));
+            }
+
+            const entries = cls.students.map(studentName => {
+                const prev = existingMap.get(studentName);
+                return {
+                    name: studentName,
+                    status: prev ? prev.status : 'Present',
+                    remark: prev ? (prev.remark || '') : ''
+                };
+            });
+
+            activeAttModalState = {
+                key: recKey,
+                date: selectedDate2027,
+                slotId: slot.slotId,
+                classId: cls.id,
+                className: cls.name,
+                startTime: slot.startTime,
+                endTime: slot.endTime,
+                entries
+            };
+
+            const [y, m, d] = selectedDate2027.split('-').map(Number);
+            const dateObj = new Date(y, m - 1, d);
+            document.getElementById('attModalDateBadge').textContent = `${WEEKDAY_NAMES[dateObj.getDay()]}, ${d} ${MONTHS_2027[m - 1]} ${y}`;
+            document.getElementById('attModalClassTitle').textContent = cls.name;
+            document.getElementById('attModalStartTime').value = slot.startTime;
+            document.getElementById('attModalEndTime').value = slot.endTime;
+            document.getElementById('attStudentSearchInput').value = '';
+
+            renderAttendanceSheetRows();
+            document.getElementById('attendanceModal').classList.remove('hidden');
+        }
+
+        function launchAttendanceForFrontRosterClass() {
+            const classId = document.getElementById('frontRosterClassSelect').value;
+            if (!classId) return;
+
+            const daySlots = getSlotsForDate(selectedDate2027);
+            const matchingSlot = daySlots.find(s => s.classId === classId);
+            if (matchingSlot) {
+                openAttendanceModalForSlot(matchingSlot.slotId);
+                return;
+            }
+
+            if (!dateOverrides[selectedDate2027]) {
+                dateOverrides[selectedDate2027] = { modified: {}, extra: [], removed: [] };
+            }
+            const newExtraId = 'extra-' + Date.now();
+            dateOverrides[selectedDate2027].extra.push({
+                id: newExtraId,
+                classId,
+                startTime: '08:00',
+                endTime: '09:00'
+            });
+            saveState();
+            renderCalendar2027();
+            renderSelectedDayPanel();
+            openAttendanceModalForSlot(newExtraId);
+        }
+
+        function closeAttendanceModal() {
+            document.getElementById('attendanceModal').classList.add('hidden');
+            activeAttModalState = null;
+        }
+
+        function renderAttendanceSheetRows() {
+            if (!activeAttModalState) return;
+            const query = (document.getElementById('attStudentSearchInput').value || '').toLowerCase().trim();
+            const container = document.getElementById('attModalRowsContainer');
+
+            updateAttendanceModalStats();
+
+            const statuses = [
+                { value: 'Present', activeClass: 'bg-emerald-600 text-white border-emerald-600 shadow-2xs', icon: 'fa-check' },
+                { value: 'Late', activeClass: 'bg-amber-500 text-white border-amber-500 shadow-2xs', icon: 'fa-clock' },
+                { value: 'Absent', activeClass: 'bg-rose-600 text-white border-rose-600 shadow-2xs', icon: 'fa-xmark' },
+                { value: 'Excused', activeClass: 'bg-sky-600 text-white border-sky-600 shadow-2xs', icon: 'fa-notes-medical' }
+            ];
+
+            const rowsHTML = activeAttModalState.entries
+                .map((entry, idx) => ({ entry, idx }))
+                .filter(({ entry }) => !query || entry.name.toLowerCase().includes(query))
+                .map(({ entry, idx }) => {
+                    const buttonsHTML = statuses.map(st => {
+                        const isSelected = entry.status === st.value;
+                        return `
+                            <button type="button" onclick="setStudentAttendanceStatus(${idx}, '${st.value}')"
+                                class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition flex items-center space-x-1 ${isSelected
+                                    ? st.activeClass
+                                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'}">
+                                <i class="fa-solid ${st.icon}"></i>
+                                <span>${st.value}</span>
+                            </button>
+                        `;
+                    }).join('');
+
+                    return `
+                        <div class="p-3 rounded-xl bg-white border border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-2.5">
+                            <div class="flex items-center space-x-3 min-w-0">
+                                <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-extrabold text-xs flex items-center justify-center shrink-0">
+                                    ${idx + 1}
+                                </span>
+                                <span class="font-bold text-xs sm:text-sm text-slate-900 truncate">${escapeHTML(entry.name)}</span>
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-2">
+                                <div class="flex flex-wrap items-center gap-1">
+                                    ${buttonsHTML}
+                                </div>
+                                <input type="text" value="${escapeAttr(entry.remark)}" oninput="setStudentAttendanceRemark(${idx}, this.value)"
+                                    placeholder="Remark (optional)..."
+                                    class="text-xs rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-brand-500 px-2.5 py-1.5 w-full sm:w-40 outline-none">
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            container.innerHTML = rowsHTML || `<p class="text-center text-xs text-slate-400 py-6">No matching student found.</p>`;
+        }
+
+        function updateAttendanceModalStats() {
+            if (!activeAttModalState) return;
+            const total = activeAttModalState.entries.length;
+            const present = activeAttModalState.entries.filter(e => e.status === 'Present').length;
+            const late = activeAttModalState.entries.filter(e => e.status === 'Late').length;
+            const absent = activeAttModalState.entries.filter(e => e.status === 'Absent').length;
+            const excused = activeAttModalState.entries.filter(e => e.status === 'Excused').length;
+            const rate = total > 0 ? Math.round(((present + late) / total) * 100) : 0;
+
+            document.getElementById('attModalLiveStats').innerHTML = `
+                <span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">Present: ${present}</span>
+                <span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800">Late: ${late}</span>
+                <span class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-800">Absent: ${absent}</span>
+                <span class="px-2 py-0.5 rounded-md bg-sky-100 text-sky-800">Excused: ${excused}</span>
+                <span class="px-2 py-0.5 rounded-md bg-brand-100 text-brand-800">Rate: ${rate}%</span>
+            `;
+        }
+
+        function setStudentAttendanceStatus(index, status) {
+            if (!activeAttModalState || !activeAttModalState.entries[index]) return;
+            activeAttModalState.entries[index].status = status;
+            renderAttendanceSheetRows();
+        }
+
+        function setStudentAttendanceRemark(index, remark) {
+            if (!activeAttModalState || !activeAttModalState.entries[index]) return;
+            activeAttModalState.entries[index].remark = remark;
+        }
+
+        function markAllStudentsStatus(status) {
+            if (!activeAttModalState) return;
+            activeAttModalState.entries.forEach(e => { e.status = status; });
+            renderAttendanceSheetRows();
+        }
+
+        function saveAttendanceFromModal() {
+            if (!activeAttModalState) return;
+            const updatedStart = document.getElementById('attModalStartTime').value || activeAttModalState.startTime;
+            const updatedEnd = document.getElementById('attModalEndTime').value || activeAttModalState.endTime;
+
+            if (updatedStart !== activeAttModalState.startTime || updatedEnd !== activeAttModalState.endTime) {
+                if (!dateOverrides[activeAttModalState.date]) {
+                    dateOverrides[activeAttModalState.date] = { modified: {}, extra: [], removed: [] };
+                }
+                const extraItem = (dateOverrides[activeAttModalState.date].extra || []).find(e => e.id === activeAttModalState.slotId);
+                if (extraItem) {
+                    extraItem.startTime = updatedStart;
+                    extraItem.endTime = updatedEnd;
+                } else {
+                    dateOverrides[activeAttModalState.date].modified[activeAttModalState.slotId] = {
+                        startTime: updatedStart,
+                        endTime: updatedEnd
+                    };
+                }
+            }
+
+            attendanceRecords[activeAttModalState.key] = {
+                key: activeAttModalState.key,
+                date: activeAttModalState.date,
+                slotId: activeAttModalState.slotId,
+                classId: activeAttModalState.classId,
+                className: activeAttModalState.className,
+                startTime: updatedStart,
+                endTime: updatedEnd,
+                entries: activeAttModalState.entries.map(e => ({ ...e }))
+            };
+
+            const savedClassName = activeAttModalState.className;
+            saveState();
+            closeAttendanceModal();
+            renderCalendar2027();
+            renderSelectedDayPanel();
+            showToast(`Attendance saved for ${savedClassName}!`);
+        }
+
+        // =========================================================================
+        // 8. PERIODIC TIMETABLE VERSIONS MODAL (MULTI-PERIOD 2027)
+        // =========================================================================
+        function getEditingPeriod() {
+            let p = timetablePeriods.find(item => item.id === editingPeriodId);
+            if (!p && timetablePeriods.length > 0) {
+                p = timetablePeriods[0];
+                editingPeriodId = p.id;
+            }
+            return p;
+        }
+
+        function openTimetableModal() {
+            const activeOnSelected = getActivePeriodForDate(selectedDate2027);
+            if (activeOnSelected) {
+                editingPeriodId = activeOnSelected.id;
+            }
+            renderTimetablePeriodTabs();
+            renderEditingPeriodDetails();
+            renderWeeklyTimetableGrid();
+            document.getElementById('timetableModal').classList.remove('hidden');
+        }
+
+        function closeTimetableModal() {
+            document.getElementById('timetableModal').classList.add('hidden');
+            renderCalendar2027();
+            renderSelectedDayPanel();
+        }
+
+        function selectTimetablePeriodTab(periodId) {
+            editingPeriodId = periodId;
+            renderTimetablePeriodTabs();
+            renderEditingPeriodDetails();
+            renderWeeklyTimetableGrid();
+        }
+
+        function renderTimetablePeriodTabs() {
+            const container = document.getElementById('timetablePeriodTabs');
+            const sorted = [...timetablePeriods].sort((a, b) => a.startDate.localeCompare(b.startDate));
+
+            container.innerHTML = sorted.map(p => {
+                const isActive = p.id === editingPeriodId;
+                return `
+                    <button type="button" onclick="selectTimetablePeriodTab('${p.id}')"
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex flex-col items-start border ${isActive
+                            ? 'bg-brand-600 text-white border-brand-600 shadow-xs'
+                            : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'}">
+                        <span>${escapeHTML(p.name)}</span>
+                        <span class="text-[10px] font-medium ${isActive ? 'text-indigo-200' : 'text-slate-400'}">${p.startDate} → ${p.endDate}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderEditingPeriodDetails() {
+            const p = getEditingPeriod();
+            if (!p) return;
+            document.getElementById('periodNameInput').value = p.name;
+            document.getElementById('periodStartDateInput').value = p.startDate;
+            document.getElementById('periodEndDateInput').value = p.endDate;
+
+            const delBtn = document.getElementById('deletePeriodBtn');
+            delBtn.disabled = timetablePeriods.length <= 1;
+            delBtn.classList.toggle('opacity-40', timetablePeriods.length <= 1);
+            delBtn.classList.toggle('cursor-not-allowed', timetablePeriods.length <= 1);
+        }
+
+        function updateCurrentPeriodMeta() {
+            const p = getEditingPeriod();
+            if (!p) return;
+            const newName = document.getElementById('periodNameInput').value.trim();
+            const newStart = document.getElementById('periodStartDateInput').value;
+            const newEnd = document.getElementById('periodEndDateInput').value;
+
+            if (newName) p.name = newName;
+            if (newStart) p.startDate = newStart;
+            if (newEnd) p.endDate = newEnd;
+
+            saveState();
+            renderTimetablePeriodTabs();
+        }
+
+        function createNewTimetablePeriod(duplicateCurrent) {
+            const current = getEditingPeriod();
+            const newId = 'period-' + Date.now();
+            const versionNum = timetablePeriods.length + 1;
+
+            let defaultStart = '2027-06-01';
+            if (current && current.endDate && current.endDate < '2027-12-30') {
+                const [y, m, d] = current.endDate.split('-').map(Number);
+                const nextDay = new Date(y, m - 1, d + 1);
+                defaultStart = `2027-${String(nextDay.getMonth() + 1).padStart(2, '0')}-${String(nextDay.getDate()).padStart(2, '0')}`;
+            }
+
+            const clonedSlots = (duplicateCurrent && current)
+                ? current.slots.map((s, idx) => ({
+                    ...s,
+                    id: `slot-${Date.now()}-${idx}`
+                }))
+                : [];
+
+            const newPeriod = {
+                id: newId,
+                name: duplicateCurrent && current
+                    ? `${current.name} (Copy v${versionNum})`
+                    : `Timetable v${versionNum} — Custom Period`,
+                startDate: defaultStart,
+                endDate: '2027-12-31',
+                slots: clonedSlots
+            };
+
+            timetablePeriods.push(newPeriod);
+            editingPeriodId = newId;
+            saveState();
+            renderTimetablePeriodTabs();
+            renderEditingPeriodDetails();
+            renderWeeklyTimetableGrid();
+            showToast(duplicateCurrent ? 'Timetable duplicated! Set your new start/end dates.' : 'New timetable period created!');
+        }
+
+        function deleteCurrentTimetablePeriod() {
+            if (timetablePeriods.length <= 1) return;
+            timetablePeriods = timetablePeriods.filter(p => p.id !== editingPeriodId);
+            editingPeriodId = timetablePeriods[0].id;
+            saveState();
+            renderTimetablePeriodTabs();
+            renderEditingPeriodDetails();
+            renderWeeklyTimetableGrid();
+            showToast('Timetable period deleted.');
+        }
+
+        function renderWeeklyTimetableGrid() {
+            const container = document.getElementById('weeklyTimetableGrid');
+            const currentPeriod = getEditingPeriod();
+            if (!currentPeriod) return;
+
+            const days = [
+                { dow: 1, name: 'Monday' },
+                { dow: 2, name: 'Tuesday' },
+                { dow: 3, name: 'Wednesday' },
+                { dow: 4, name: 'Thursday' },
+                { dow: 5, name: 'Friday' }
+            ];
+
+            if (currentPeriod.slots.some(s => s.dayOfWeek === 6)) days.push({ dow: 6, name: 'Saturday' });
+            if (currentPeriod.slots.some(s => s.dayOfWeek === 0)) days.push({ dow: 0, name: 'Sunday' });
+
+            container.className = `p-4 sm:p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-${Math.min(days.length, 5)} gap-3.5 bg-slate-50 flex-grow`;
+
+            container.innerHTML = days.map(d => {
+                const slots = currentPeriod.slots
+                    .filter(s => s.dayOfWeek === d.dow)
+                    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+                const cards = slots.length === 0
+                    ? `<p class="text-[11px] text-slate-400 italic py-4 text-center">No periods</p>`
+                    : slots.map(s => {
+                        const cls = getClassById(s.classId);
+                        return `
+                            <div class="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-1.5">
+                                <div class="flex items-start justify-between gap-1">
+                                    <div>
+                                        <span class="font-bold text-xs text-slate-800 leading-snug block">${escapeHTML(cls.name)}</span>
+                                        ${s.room ? `<span class="text-[10px] font-medium text-brand-600">${escapeHTML(s.room)}</span>` : ''}
+                                    </div>
+                                    <button type="button" onclick="removeRecurringTimetableSlot('${s.id}')" class="text-slate-400 hover:text-rose-600 text-xs p-0.5" title="Delete Period">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
+                                <div class="flex items-center space-x-1 text-[11px]">
+                                    <input type="time" value="${s.startTime}" onchange="updateRecurringSlotTime('${s.id}', 'start', this.value)"
+                                        class="bg-slate-50 border border-slate-200 rounded px-1 py-0.5 font-semibold text-slate-700 w-full">
+                                    <span>-</span>
+                                    <input type="time" value="${s.endTime}" onchange="updateRecurringSlotTime('${s.id}', 'end', this.value)"
+                                        class="bg-slate-50 border border-slate-200 rounded px-1 py-0.5 font-semibold text-slate-700 w-full">
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                return `
+                    <div class="bg-slate-100/80 rounded-xl p-3 border border-slate-200 flex flex-col">
+                        <div class="font-extrabold text-xs uppercase tracking-wider text-brand-800 pb-2 mb-2 border-b border-slate-200 flex items-center justify-between">
+                            <span>${d.name}</span>
+                            <span class="text-[10px] bg-white px-2 py-0.5 rounded-full text-slate-600">${slots.length}</span>
+                        </div>
+                        <div class="space-y-2 flex-grow">${cards}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addRecurringTimetableSlot() {
+            const currentPeriod = getEditingPeriod();
+            if (!currentPeriod) return;
+
+            const dayOfWeek = parseInt(document.getElementById('ttDaySelect').value, 10);
+            const classId = document.getElementById('ttClassSelect').value;
+            const room = document.getElementById('ttRoomInput').value.trim();
+            const startTime = document.getElementById('ttStartTime').value;
+            const endTime = document.getElementById('ttEndTime').value;
+            if (!classId || !startTime || !endTime) return;
+
+            currentPeriod.slots.push({
+                id: 'slot-' + Date.now(),
+                dayOfWeek,
+                classId,
+                room,
+                startTime,
+                endTime
+            });
+
+            document.getElementById('ttRoomInput').value = '';
+            saveState();
+            renderWeeklyTimetableGrid();
+            showToast(`Added to "${currentPeriod.name}"!`);
+        }
+
+        function updateRecurringSlotTime(slotId, bound, newVal) {
+            const currentPeriod = getEditingPeriod();
+            if (!currentPeriod || !newVal) return;
+            const slot = currentPeriod.slots.find(s => s.id === slotId);
+            if (!slot) return;
+            if (bound === 'start') slot.startTime = newVal;
+            else slot.endTime = newVal;
+            saveState();
+            showToast('Period slot time updated!');
+        }
+
+        function removeRecurringTimetableSlot(slotId) {
+            const currentPeriod = getEditingPeriod();
+            if (!currentPeriod) return;
+            currentPeriod.slots = currentPeriod.slots.filter(s => s.id !== slotId);
+            saveState();
+            renderWeeklyTimetableGrid();
+            showToast('Slot removed from timetable period.');
+        }
+
+        // =========================================================================
+        // 9. CLASS & ROSTER MANAGER MODAL
+        // =========================================================================
+        function openClassManagerModal() {
+            renderExistingClassesManager();
+            document.getElementById('classManagerModal').classList.remove('hidden');
+        }
+
+        function closeClassManagerModal() {
+            document.getElementById('classManagerModal').classList.add('hidden');
+            populateAllClassDropdowns();
+            renderFrontRosterList();
+            renderCalendar2027();
+            renderSelectedDayPanel();
+        }
+
+        function renderExistingClassesManager() {
+            const container = document.getElementById('existingClassesListContainer');
+            container.innerHTML = classes.map(cls => `
+                <div class="p-3 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-2">
+                    <div>
+                        <div class="font-bold text-xs sm:text-sm text-slate-800">${escapeHTML(cls.name)}</div>
+                        <div class="text-[11px] text-slate-500">${cls.students.length} Students</div>
+                    </div>
+                    ${classes.length > 1 ? `
+                    <button type="button" onclick="deleteClassById('${cls.id}')" class="px-2.5 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition">
+                        Delete
+                    </button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function createNewClassFromModal() {
+            const name = document.getElementById('newClassTitleInput').value.trim();
+            const rawRoster = document.getElementById('newClassRosterInput').value;
+            if (!name) {
+                showToast('Please enter a class name.', true);
+                return;
+            }
+            const students = rawRoster.split('\n').map(s => s.trim()).filter(Boolean);
+            classes.push({
+                id: 'cls-' + Date.now(),
+                name,
+                color: 'indigo',
+                students
+            });
+            document.getElementById('newClassTitleInput').value = '';
+            document.getElementById('newClassRosterInput').value = '';
+            saveState();
+            populateAllClassDropdowns();
+            renderExistingClassesManager();
+            showToast(`Class "${name}" created!`);
+        }
+
+        function deleteClassById(classId) {
+            classes = classes.filter(c => c.id !== classId);
+            timetablePeriods.forEach(p => {
+                p.slots = p.slots.filter(s => s.classId !== classId);
+            });
+            saveState();
+            renderExistingClassesManager();
+            showToast('Class deleted.');
+        }
+
+        // =========================================================================
+        // 10. GITHUB STANDALONE HTML DOWNLOAD, JSON BACKUP & CSV EXPORT
+        // =========================================================================
+        function downloadHTMLForGitHub() {
+            const doctype = '<!DOCTYPE html>\n';
+            const htmlContent = doctype + document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Downloaded index.html — ready to upload to GitHub!');
+        }
+
+        function exportBackupJSON() {
+            const payload = {
+                teacher: 'Teacher Theresa',
+                year: 2027,
+                exportedAt: new Date().toISOString(),
+                classes,
+                timetablePeriods,
+                dateOverrides,
+                attendanceRecords
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Teacher_Theresa_2027_Backup.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Backup JSON downloaded!');
+        }
+
+        function importBackupJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data.classes)) classes = data.classes;
+                    if (Array.isArray(data.timetablePeriods)) timetablePeriods = data.timetablePeriods;
+                    if (data.dateOverrides) dateOverrides = data.dateOverrides;
+                    if (data.attendanceRecords) attendanceRecords = data.attendanceRecords;
+                    if (timetablePeriods.length > 0) editingPeriodId = timetablePeriods[0].id;
+                    saveState();
+                    populateAllClassDropdowns();
+                    renderFrontRosterList();
+                    renderCalendar2027();
+                    renderSelectedDayPanel();
+                    showToast('2027 records restored from backup!');
+                } catch (err) {
+                    showToast('Invalid backup file selected.', true);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function exportAllCSV() {
+            const list = Object.values(attendanceRecords);
+            if (list.length === 0) {
+                showToast('No updated attendance records to export yet.', true);
+                return;
+            }
+            list.sort((a, b) => a.date.localeCompare(b.date));
+
+            const rows = [['Teacher', 'Academic Year', 'Date', 'Start Time', 'End Time', 'Class', 'No.', 'Student Name', 'Status', 'Remarks']];
+            list.forEach(rec => {
+                rec.entries.forEach((e, i) => {
+                    rows.push([
+                        'Teacher Theresa',
+                        '2027',
+                        rec.date,
+                        rec.startTime,
+                        rec.endTime,
+                        rec.className,
+                        i + 1,
+                        e.name,
+                        e.status,
+                        e.remark || ''
+                    ]);
+                });
+            });
+
+            const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Teacher_Theresa_2027_Attendance.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('2027 Attendance CSV exported!');
+        }
+
+        function formatTime12h(time24) {
+            if (!time24) return '';
+            const [hStr, mStr] = time24.split(':');
+            let h = parseInt(hStr, 10);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return `${h}:${mStr} ${ampm}`;
+        }
+
+        function escapeHTML(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function escapeAttr(str) {
+            return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        let toastTimer;
+        function showToast(msg, isError = false) {
+            const banner = document.getElementById('toastBanner');
+            document.getElementById('toastText').textContent = msg;
+            document.getElementById('toastIcon').className = isError
+                ? 'fa-solid fa-circle-exclamation text-rose-400 text-base'
+                : 'fa-solid fa-circle-check text-emerald-400 text-base';
+            banner.classList.remove('translate-y-20', 'opacity-0');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => banner.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+    </script>
+</body>
+</html>
